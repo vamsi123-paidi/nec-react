@@ -1,0 +1,213 @@
+💼 4. useContext Hook
+
+**Definition:** `useContext` allows you to access values from a `React.Context` without passing props manually through every level (avoids prop drilling).
+
+**Syntax:**
+
+const value = useContext(MyContext);
+
+**How to create and use context:**
+
+import React, { useContext, createContext } from 'react';
+
+const UserContext = createContext();
+
+function App() {
+  return (
+    <UserContext.Provider value={{ name: "John" }}>
+      <Child />
+    </UserContext.Provider>
+  );
+}
+
+function Child() {
+  const user = useContext(UserContext);
+  return <h2>Hello, {user.name}</h2>;
+}
+
+**Why use it:**
+
+* No need to pass props through every level.
+* Good for global data like user info, theme, language.
+
+
+📊 5. useReducer Hook
+
+**Definition:** Used for more complex state logic (like Redux-style state updates).
+
+**Syntax:**
+
+const [state, dispatch] = useReducer(reducerFn, initialState);
+
+**Example:**
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment': return { count: state.count + 1 };
+    case 'decrement': return { count: state.count - 1 };
+    default: return state;
+  }
+} 
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+
+  return (
+    <div>
+      <h1>{state.count}</h1>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    </div>
+  );
+}
+
+**When to use:**
+
+* For managing multiple related states.
+* When state transitions are based on complex logic.
+
+
+🚀 6. useMemo Hook
+
+**Definition:** `useMemo` memorizes a calculated value and only recomputes it when its dependencies change.
+
+**Syntax:**
+
+const result = useMemo(() => computeHeavy(input), [input]);
+
+**Example:**
+
+const expensiveResult = useMemo(() => {
+  return heavyCalculation(num);
+}, [num]);
+
+**When to use:**
+
+* If a function does heavy computation.
+* Prevents unnecessary recalculations.
+
+**Without useMemo:**
+Every render = recompute.
+
+**With useMemo:**
+Cached result used unless dependencies change.
+
+import React, { useState, useMemo } from 'react';
+
+function UseMemoExample() {
+  const [count, setCount] = useState(0);
+  const [other, setOther] = useState(0);
+
+  // Simulate a heavy computation
+  const expensiveValue = useMemo(() => {
+    console.log('Calculating...');
+    return count * 2;
+  }, [count]);
+
+  return (
+    <div>
+      <h2>useMemo Example</h2>
+      <p>Count: {count}</p>
+      <p>Expensive Value (count * 2): {expensiveValue}</p>
+      <button onClick={() => setCount(count + 1)}>Increment Count</button>
+      <button onClick={() => setOther(other + 1)}>Change Other State</button>
+    </div>
+  );
+}
+
+Click "Increment Count"
+⏳ You'll notice a 1-second delay as the calculation runs.
+
+Click "Change Other State"
+⚡ Instant update — no delay, because useMemo prevents recalculating.
+
+This shows how useMemo avoids unnecessary slow computations when dependencies haven't changed.
+
+
+## 🔁 7. useCallback Hook
+
+**Definition:** `useCallback` memorizes a function reference so it doesn’t get recreated unless dependencies change.
+
+**Syntax:**
+
+const memoizedFn = useCallback(() => doSomething(), [deps]);
+
+**Example:**
+
+const handleClick = useCallback(() => {
+  console.log("Button clicked");
+}, []);
+
+**When to use:**
+
+* When passing callbacks to child components to prevent unnecessary re-renders.
+* Works well with `React.memo`.
+
+import React, { useState, useCallback } from 'react';
+
+function Button({ onClick, label }) {
+  console.log('Rendering button:', label);
+  return <button onClick={onClick}>{label}</button>;
+}
+
+function UseCallbackExample() {
+  const [count, setCount] = useState(0);
+
+  const increment = useCallback(() => {
+    setCount(c => c + 1);
+  }, []);
+
+  return (
+    <div>
+      <h2>useCallback Example</h2>
+      <p>Count: {count}</p>
+      <Button onClick={increment} label="Increment Count" />
+    </div>
+  );
+}
+
+
+
+## 🧩 8. Custom Hooks
+
+**Definition:** A custom hook is a JavaScript function whose name starts with "use" and that may call other hooks inside it.
+
+**Why use it:**
+
+* Extract and reuse logic across components.
+* Keep components clean and DRY.
+
+**How to create:**
+
+import { useState } from 'react';
+
+function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => setCount(count + 1);
+  const decrement = () => setCount(count - 1);
+  const reset = () => setCount(initialValue);
+
+  return { count, increment, decrement, reset };
+}
+
+**How to use it:**
+
+function CounterComponent() {
+  const { count, increment, decrement, reset } = useCounter(5);
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+
+**Tips:**
+
+* Must start with `use`.
+* Can use other hooks inside.
+* Keeps logic reusable and modular.

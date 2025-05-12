@@ -1,0 +1,388 @@
+1. Introduction to Vite + setup
+2. JSX, functional components recap
+3. Props (with drilling)
+4. Rendering
+5. Styling
+6. Best practices
+7. Exercises
+
+React Basics with Vite, JSX, Components & Props
+
+1. What is React?
+
+**React** is a JavaScript **library** used to build **reusable UI components** and **single-page applications (SPAs)** with fast rendering using the **Virtual DOM**.
+
+
+📜 History of React
+
+🔹 Who created React?
+
+* **React was developed by Jordan Walke**, a software engineer at **Facebook**.
+* It was first deployed in **Facebook's News Feed in 2011**, and later in **Instagram in 2012**.
+
+🔹 When was React released?
+
+* **React was open-sourced by Facebook in May 2013.**
+
+🔹 Why was React created?
+
+Facebook faced challenges with:
+
+* Updating the DOM efficiently
+* Managing complex UIs with a lot of dynamic data
+
+They needed a **fast, reusable, and maintainable** solution.
+React solved this with:
+
+* **Component-based structure**
+* **Virtual DOM**
+* **One-way data flow**
+
+🧠 Why Are We Using React?
+
+React is used because it is:
+
+✅ 1. **Component-Based**
+
+* Breaks the UI into **independent, reusable pieces**.
+* Example: Navbar, Sidebar, Footer, Card – all as separate components.
+
+✅ 2. **Declarative Syntax**
+
+* You **declare** what you want to show.
+* React handles the rendering efficiently.
+
+Example:
+<h1>Hello {name}</h1>
+
+You declare what to render — not how.
+
+✅ 3. **Virtual DOM**
+
+* React uses a **Virtual DOM** to improve performance.
+* Changes are made in memory first, then synced with the real DOM — this is fast.
+
+✅ 4. **One-Way Data Flow**
+
+* Data flows in **one direction** (top to bottom).
+* This makes debugging and tracking state changes easier.
+
+✅ 5. **Rich Ecosystem**
+
+* Tools like:
+
+  * `React Router` (for routing)
+  * `Redux / Context` (for state management)
+  * `Next.js` (for SSR and static sites)
+* Large developer community and third-party libraries.
+
+✅ 6. **Strong Community and Support**
+
+* Backed by Facebook and used by huge companies: Instagram, WhatsApp, Netflix, Airbnb.
+
+🛠️ When Should We Use React?
+
+React is best when:
+
+* Your UI is dynamic and updates often
+* You need component reuse
+* You need fast rendering and scalability
+* You're building SPAs (Single Page Applications)
+
+🚀 Who Uses React?
+
+Some major companies:
+
+* Facebook
+* Instagram
+* Netflix
+* Airbnb
+* Uber
+* WhatsApp Web
+* Amazon
+
+🔹 3. Setting Up a React App with Vite
+
+Step-by-step:
+Get-ExecutionPolicy
+Set-ExecutionPolicy RemoteSigned
+npm create vite@latest app_name
+cd my-app
+npm install
+npm run dev
+
+ 🧾 File Structure Highlights:
+
+* `main.jsx`: Entry point
+* `App.jsx`: Root component
+* `index.html`: Template where app is injected
+* `vite.config.js`: Vite configuration
+
+🔹 4. What is JSX?
+
+**JSX (JavaScript XML)** lets you write **HTML-like syntax in JavaScript**. React transforms JSX into JavaScript using `React.createElement()`.
+
+
+const element = <h1>Hello JSX!</h1>;
+**JSX Rules:**
+
+* Always return a **single root element**
+* Use `className` instead of `class`
+* Use `{}` for JavaScript expressions
+
+
+const name = "React";
+return <h1>Hello, {name}</h1>;
+
+
+🔹 5. Functional Components
+
+**Definition:**
+A functional component is a **JavaScript function** that returns **JSX**.
+
+function Welcome() {
+  return <h2>Welcome to React</h2>;
+}
+
+
+OR arrow function:
+
+
+const Welcome = () => <h2>Welcome!</h2>;
+
+
+✅ Use **PascalCase** for component names: `MyComponent`, not `myComponent`.
+
+
+🔹 6. Props in React
+
+**Definition:**
+Props (short for "properties") allow you to pass **data from a parent component to a child component**.
+
+
+const User = (props) => {
+  return <h3>Hello, {props.name}</h3>;
+};
+
+function App() {
+  return <User name="Alice" />;
+}
+
+🔹 7.Absolutely! Let’s now **clearly break down**:
+
+1. ✅ What **props drilling** means
+2. ✅ A **simple example** step-by-step
+3. ✅ A **real-world mini project** using props drilling: a **Profile Card**
+
+---
+
+## 🔍 What is Props Drilling?
+
+**Definition:**
+**Props drilling** means **passing data from a top-level component down to deeply nested components**, even if intermediate components **don't need to use that data**, but just pass it along.
+
+This often makes your code harder to maintain, especially as the component tree grows larger.
+✅ Simple Example of Props Drilling
+
+// App.jsx
+function App() {
+  const name = "Charlie";
+  return <Parent name={name} />;
+}
+
+// Parent.jsx
+function Parent(props) {
+  return <Child name={props.name} />;
+}
+
+// Child.jsx
+function Child(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+
+1. `App` has the data: `name = "Charlie"`
+2. It passes this data to `<Parent name={name} />`
+3. `Parent` doesn't use `name`, but it receives it and passes it to `Child`: `<Child name={props.name} />`
+4. `Child` finally **uses** the `name` to render: `Hello, Charlie`
+
+So the **data “drilled down” through Parent** just to reach Child.
+
+
+🔹 8. Rendering Components
+
+In `main.jsx`, React renders the main component:
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+Then in `App.jsx`, you import and use other components:
+
+import Header from './Header';
+
+function App() {
+  return (
+    <>
+      <Header />
+      <h1>Hello, world!</h1>
+    </>
+  );
+}
+
+🔹 9. Styling in React
+
+✅ 1. Inline Styling
+
+const style = {
+  color: 'blue',
+  backgroundColor: 'lightgray'
+};
+
+return <h1 style={style}>Styled Heading</h1>;
+
+✅ 2. CSS Files
+
+* In `App.css`:
+
+.title {
+  font-size: 24px;
+  color: purple;
+}
+
+* In `App.jsx`:
+
+import './App.css';
+
+return <h1 className="title">Styled Heading</h1>;
+
+🔹 10. Best Practices
+
+* Always **keep components in their own files**
+* Use **clear names** for props
+* **Avoid prop drilling** unless necessary (use Context or state later)
+* Keep JSX **clean and readable**
+* **Use semantic HTML** tags
+
+
+🔹 11. 🔁 Exercise
+
+🧩 Mini Project: Profile Card with Props Drilling
+
+We will create:
+
+* An `App` component with `user` data
+* A `Card` component to pass the user to
+* A `Profile` component that **displays** the data
+
+This will demonstrate prop drilling clearly!
+
+🔧 File 1: `App.jsx`
+
+import Card from './Card';
+
+function App() {
+  const user = {
+    name: "John Doe",
+    role: "Frontend Developer",
+    image: "https://via.placeholder.com/150"
+  };
+
+  return <Card user={user} />;
+}
+
+export default App;
+
+📌 `App` owns the `user` data
+📌 Passes it to `<Card user={user} />`
+
+
+🔧 File 2: `Card.jsx`
+
+import Profile from './Profile';
+
+const Card = ({ user  }) => {
+  return (
+    <div className="card">
+      <Profile user={user} />
+    </div>
+  );
+};
+
+export default Card;
+
+📌 `Card` **does not use** `user` directly
+📌 It just **passes it down** to `Profile`
+
+This is **props drilling**.
+
+🔧 File 3: `Profile.jsx`
+
+const Profile = ({ user }) => {
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <img src={user.image} alt={user.name} />
+      <h2>{user.name}</h2>
+      <p>{user.role}</p>
+    </div>
+  );
+};
+
+export default Profile;
+
+📌 `Profile` finally **uses** the props to render image, name, and role.
+
+💡 Diagram of Data Flow
+
+
+App  →  Card  →  Profile
+ ↑        ↑        ↑
+Has     Forwards   Uses
+user     props     props
+
+
+🧠 Why is this props drilling?
+
+Because:
+
+* The `user` object was **only used in `Profile`**
+* But it had to be passed through `Card`, even though `Card` didn't use it.
+
+This is fine in **small apps**, but as components go **deeper**, prop drilling becomes **harder to manage**.
+
+
+### 📌 Result Output:
+
+A simple **profile card**:
+
+```
++---------------------------+
+|   [User Image]           |
+|   John Doe               |
+|   Frontend Developer     |
++---------------------------+
+
+
+🎯 Concepts Used:
+
+* Functional Components
+* JSX
+* Props
+* Prop Drilling
+* CSS Styling
+
+
+
+🧠 Summary to Note
+
+| Concept          | Description                                         |
+| ---------------- | --------------------------------------------------- |
+| React            | JS library for building UIs                         |
+| Vite             | Fast build tool for modern web apps                 |
+| JSX              | HTML-like syntax in JavaScript                      |
+| Functional Comp. | Functions returning JSX                             |
+| Props            | Values passed from parent to child component        |
+| Prop Drilling    | Passing props through multiple levels unnecessarily |
+| Styling          | Apply CSS via className or inline styles            |
