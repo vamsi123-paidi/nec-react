@@ -1,0 +1,204 @@
+1. **Introduction**  
+2. **Basic Setup** (App.js, Home.js, About.js)  
+3. **Navigation** (Navbar.js, Login.js)  
+4. **Dynamic Routing** (UserProfile.js with API fetch)  
+5. **Nested Routes** (DashboardLayout.js)  
+6. **Protected Routes** (ProtectedRoute.js)  
+7. **Error Handling** (NotFound.js)  
+8. **Performance** (Lazy Loading)
+
+📌 1. Basic Setup**  
+**App.js (Main Router Setup)**
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './Home';
+import About from './About';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+*Home.js**
+
+export default function Home() {
+  return <h1>Home Page</h1>;
+}
+
+**About.js**
+
+export default function About() {
+  return <h1>About Page</h1>;
+}
+
+**Explanation:**  
+- `BrowserRouter` wraps the entire app.  
+- `Routes` defines route containers.  
+- `Route` maps paths (`/`, `/about`) to components.  
+
+
+**📌 2. Navigation (Link & useNavigate)**  
+**Navbar.js**
+
+import { Link } from 'react-router-dom';
+
+export default function Navbar() {
+  return (
+    <nav>
+      <Link to="/">Home</Link> 
+      <Link to="/about">About</Link>
+    </nav>
+  );
+}
+
+**Login.js (Programmatic Navigation)**
+
+import { useNavigate } from 'react-router-dom';
+
+export default function Login() {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate('/dashboard'); // Redirect after login
+  };
+
+  return <button onClick={handleLogin}>Login</button>;
+}
+
+**Explanation:**  
+- `Link` prevents full page reloads.  
+- `useNavigate()` redirects programmatically.  
+
+
+**📌 3. Dynamic Routing with Data Fetching**  
+**App.js (Add Dynamic Route)**
+
+// Add this route inside <Routes>
+<Route path="/user/:userId" element={<UserProfile />} />
+
+**UserProfile.js**
+
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
+export default function UserProfile() {
+  const { userId } = useParams();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+      .then(res => res.json())
+      .then(data => setUser(data));
+  }, [userId]);
+
+  if (!user) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>Email: {user.email}</p>
+    </div>
+  );
+}
+
+**Explanation:**  
+- `:userId` in the route path makes it dynamic.  
+- `useParams()` extracts `userId` from the URL.  
+- `fetch()` loads user data from an API.  
+
+
+**📌 4. Nested Routes (Layout System)**  
+**DashboardLayout.js**
+
+import { Outlet, Link } from 'react-router-dom';
+
+export default function DashboardLayout() {
+  return (
+    <div>
+      <h2>Dashboard</h2>
+      <nav>
+        <Link to="profile">Profile</Link>
+        <Link to="settings">Settings</Link>
+      </nav>
+      <Outlet /> {/* Renders nested routes here */}
+    </div>
+  );
+}
+
+**App.js (Add Nested Routes)**
+
+<Route path="/dashboard" element={<DashboardLayout />}>
+  <Route path="profile" element={<Profile />} />
+  <Route path="settings" element={<Settings />} />
+</Route>
+
+**Explanation:**  
+- `Outlet` acts as a placeholder for child routes.  
+- Paths become `/dashboard/profile` and `/dashboard/settings`.  
+
+
+**📌 5. Protected Routes (Authentication)**  
+**ProtectedRoute.js**
+
+import { Navigate } from 'react-router-dom';
+
+export default function ProtectedRoute({ children }) {
+  const isAuthenticated = true; // Replace with real auth logic
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
+
+**App.js (Usage)**
+
+<Route 
+  path="/admin" 
+  element={
+    <ProtectedRoute>
+      <AdminDashboard />
+    </ProtectedRoute>
+  } 
+/>
+
+**Explanation:**  
+- Redirects to `/login` if not authenticated.  
+- `replace` prevents back-button navigation to blocked routes.  
+
+
+**📌 6. 404 Page (Catch-All Route)**  
+**NotFound.js**
+
+export default function NotFound() {
+  return <h1>404 - Page Not Found</h1>;
+}
+
+**App.js (Usage)**
+
+<Route path="*" element={<NotFound />} />
+
+
+**📌 7. Lazy Loading (Performance Boost)**  
+**App.js**
+
+import { lazy, Suspense } from 'react';
+const Home = lazy(() => import('./Home'));
+
+function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
+**Explanation:**  
+- `lazy()` dynamically imports components.  
+- `Suspense` shows a fallback during loading.  

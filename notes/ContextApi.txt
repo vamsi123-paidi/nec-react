@@ -1,0 +1,262 @@
+📘 React Context API:
+
+🔰 1. What is the Context API?
+
+The **Context API** is a **built-in feature** in React (introduced in React 16.3) that allows you to **share data (state) across the component tree** without having to pass props manually at every level (**prop drilling**).
+
+🧠 2. Why Do We Need Context API?
+
+Problem: Prop Drilling
+
+When a value needs to be passed from a parent component to deeply nested children, we end up passing props through many intermediate components that don’t even use the data themselves.
+
+<GrandParent>
+  <Parent>
+    <Child>
+      <GrandChild data={value} />
+    </Child>
+  </Parent>
+</GrandParent>
+
+This is called **prop drilling**. It makes code harder to manage, especially in large apps.
+
+Solution: Context API
+
+With Context API, you can make data **globally available** to all components without manually passing props.
+
+🏗️ 3. Structure of Context API
+
+Context API has **three main steps**:
+
+1. Create Context
+2. Provide Context
+3. Consume Context
+
+Let’s go through each with examples.
+
+🧱 4. Step-by-Step Example
+
+🧾 Step 1: Create Context
+
+import { createContext } from 'react';
+
+export const ThemeContext = createContext();  // This returns an object with Provider & Consumer
+
+This creates a context object.
+
+
+🧾 Step 2: Provide Context (Wrap components)
+
+import React, { useState } from 'react';
+import { ThemeContext } from './ThemeContext';
+import App from './App';
+
+const ThemeProvider = () => {
+  const [theme, setTheme] = useState('dark');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <App />
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;
+
+Here, we're **providing the context** value to the tree below it.
+
+> ⚠️ Important: Every component inside `<ThemeContext.Provider>` can now access the value.
+
+
+🧾 Step 3: Consume Context
+
+🔸 a) Using `useContext` Hook (Modern Way)
+
+import React, { useContext } from 'react';
+import { ThemeContext } from './ThemeContext';
+
+const Navbar = () => {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  return (
+    <div>
+      <h1>Theme is {theme}</h1>
+      <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>Toggle Theme</button>
+    </div>
+  );
+};
+
+export default Navbar;
+
+🔸 b) Using `<ThemeContext.Consumer>` (Old Way)
+
+<ThemeContext.Consumer>
+  {({ theme }) => <div>Current Theme: {theme}</div>}
+</ThemeContext.Consumer>
+
+> ✅ `useContext()` is the **recommended way** in function components.
+
+
+🌐 5. Real-World Analogy
+
+Think of **Context** like **global state** or a **central store** for a small part of your app. Imagine you're in a house:
+
+* You (a component) want to know the **Wi-Fi password** (global data).
+* Instead of asking the owner (App) and him telling each person in each room (prop drilling),
+* He puts it on a **sticky note** on the door (Context Provider).
+* Now, anyone in the house can walk up and read it (Consumer using `useContext`).
+
+
+📌 6. When Should You Use Context API?
+
+✅ Great for:
+
+* Authentication (user login state)
+* Theme toggling (dark/light mode)
+* Language settings (i18n)
+* Cart data in small e-commerce apps
+* Global modals, alerts, etc.
+
+❌ Avoid using Context for:
+
+* High-frequency state updates (like animations, timers)
+* Large-scale state management (consider Redux for complex apps)
+
+
+⚙️ 7. Best Practices
+
+* ✅ Split context logic into a separate `ContextProvider.js` file.
+* ✅ Always wrap consumers in providers in the **component tree**.
+* ✅ Use **multiple contexts** if you have different concerns (e.g., ThemeContext, AuthContext).
+* ✅ Memoize context value using `useMemo()` for performance.
+
+const value = useMemo(() => ({ theme, setTheme }), [theme]);
+
+🧾 8. Directory Structure Example
+
+src/
+│
+├── contexts/
+│   └── ThemeContext.js
+│
+├── components/
+│   ├── Navbar.jsx
+│   └── Footer.jsx
+│
+├── App.js
+└── index.js
+
+🧪 9. Complete Working Example
+
+📁 ThemeContext.js
+
+import { createContext } from 'react';
+
+export const ThemeContext = createContext(null);
+
+📁 ThemeProvider.js
+
+import React, { useState, useMemo } from 'react';
+import { ThemeContext } from './ThemeContext';
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('dark');
+
+  const value = useMemo(() => ({ theme, setTheme }), [theme]);
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;
+
+📁 Navbar.jsx
+
+import React, { useContext } from 'react';
+import { ThemeContext } from '../contexts/ThemeContext';
+
+const Navbar = () => {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  return (
+    <nav style={{ background: theme === 'dark' ? '#333' : '#eee', color: theme === 'dark' ? '#fff' : '#000' }}>
+      <h1>Navbar</h1>
+      <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>Toggle</button>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+📁 App.js
+
+import React from 'react';
+import Navbar from './components/Navbar';
+
+function App() {
+  return (
+    <div>
+      <Navbar />
+      <h2>Hello Context API!</h2>
+    </div>
+  );
+}
+
+export default App;
+
+📁 index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import ThemeProvider from './contexts/ThemeProvider';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
+);
+
+📊 10. Advantages of Context API
+
+* ✅ No need for prop drilling
+* ✅ Simple and easy to implement
+* ✅ Good for small to medium global state
+* ✅ Reduces component coupling
+
+
+❌ 11. Limitations
+
+* ❌ Not ideal for high-frequency updates (can cause re-renders)
+* ❌ Not observable like Redux (no dev tools or time-travel debugging)
+* ❌ Can't persist state out of the box
+* ❌ Can become hard to manage in large apps if overused
+
+
+🚀 12. Alternatives to Context API
+
+* **Redux** – for complex state and developer tooling
+* **Zustand / Jotai / Recoil** – lightweight state managers
+* **MobX** – reactive state management
+
+
+💬 13. Interview Questions (Bonus)
+
+1. What is Context API?
+2. What problems does Context solve?
+3. How is context different from Redux?
+4. How do you avoid unnecessary re-renders with Context?
+5. Can we use multiple contexts? How?
+6. Is context reactive?
+
+
+📚 14. Final Tips for Students
+
+* Start using Context for things like themes, auth, or language selection.
+* Avoid using it like Redux unless your app is small.
+* Practice by building a **Dark/Light Theme Toggle App** using Context.
+* Pair `useContext` with `useReducer` for complex state logic.
