@@ -6,7 +6,7 @@ const NavbarComp = () => {
 
   return (
     <div>
-      <h1>Theme is {theme}</h1>
+      <h1> The Theme is {theme}</h1>
       <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>Toggle Theme</button>
     </div>
   );
