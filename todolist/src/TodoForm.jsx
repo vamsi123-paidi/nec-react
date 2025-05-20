@@ -17,7 +17,7 @@ function TodoForm({ addTodo }) {
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Add a new task..."
+        placeholder="Enter the data"
       />
       <button type="submit">
         <FaPlus /> Add
