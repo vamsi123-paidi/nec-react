@@ -20,7 +20,7 @@ function TodoForm({ addTodo }) {
         placeholder="Add a new task..."
       />
       <button type="submit">
-        <FaPlus /> Add
+        <FaPlus /> Click Me
       </button>
     </form>
   );
