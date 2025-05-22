@@ -25,13 +25,13 @@ UI → dispatch(action) → reducer → store → UI re-renders
 🏗️ 5. Structure of a Redux Application
 src/
 ├── redux/
-│   ├── store.js
+│   ├── store.jsx
 │   ├── slices/
-│   │   └── counterSlice.js
+│   │   └── counterSlice.jsx
 ├── components/
 │   ├── Counter.jsx
-├── App.js
-└── index.js
+├── App.jsx
+└── index.jsx
 
 🧾 6. Step-by-Step Redux with Example
 
@@ -192,7 +192,7 @@ const postsSlice = createSlice({
 
 export default postsSlice.reducer;
 
-4️⃣ Posts.jsx
+4️⃣ Posts.jsx 
 -----------------------------
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -341,8 +341,6 @@ src/
 ├── index.js                       # App entry point
 ├── styles/
 │   └── app.css                    # Global styling
-└── utils/
-    └── api.js                     # API utility functions
 
 📌 POINT 1: Install Packages
 npm install @reduxjs/toolkit react-redux
@@ -475,13 +473,6 @@ body {
   background-color: #f7f7f7;
 }
 
-📌 POINT 9: API Utilities (utils/api.js) [Optional]
-------------------------------------
-export const fetchFromAPI = async (url) => {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('Network response was not ok');
-  return await response.json();
-};
 
 📌 POINT 10: Thunks handle pending, fulfilled, rejected states
 Handled automatically in productsSlice using extraReducers.

@@ -1,0 +1,88 @@
+
+Git Project Management with Team (Using Branches)
+=================================================
+
+🎯 Goal:
+One student (creator) creates a project repo on GitHub. Four others are added as collaborators. Each one works on their own branch, and submits changes via Pull Requests (PRs).
+
+✅ Prerequisites:
+- GitHub account for each student
+- Git installed on each system
+- Basic terminal knowledge
+
+-------------------------------------------------
+🧑‍🏫 PART 1: Creator creates the repository
+-------------------------------------------------
+1. Login to GitHub (creator)
+2. Click on "New repository"
+3. Set repository name: team-project
+4. Click "Create repository"
+5. Copy the repo link: https://github.com/creator-name/team-project
+
+-------------------------------------------------
+👥 PART 2: Add Collaborators
+-------------------------------------------------
+1. Go to repository → Settings → Collaborators
+2. Click "Invite a collaborator"
+3. Add the other 4 members by their GitHub usernames
+4. They must accept the invitation
+
+-------------------------------------------------
+📥 PART 3: Team Members Clone the Repo
+-------------------------------------------------
+Each member:
+$ git clone https://github.com/creator-name/team-project.git
+$ cd team-project
+
+-------------------------------------------------
+🌿 PART 4: Create and Use Branches
+-------------------------------------------------
+Each member should create their own branch:
+
+Example (Student B):
+$ git checkout -b student-b-branch
+
+Make changes in files
+
+$ git add .
+$ git commit -m "Added feature X"
+$ git push origin student-b-branch
+
+-------------------------------------------------
+🔁 PART 5: Pull Request (PR) Flow
+-------------------------------------------------
+1. Go to GitHub repo
+2. GitHub will show a message: "Compare & pull request" 
+3. Click it, add a description, and create a PR
+4. Creator or team lead reviews and merges the PR into 'main'
+
+-------------------------------------------------
+🛠️ PART 6: Keeping Branches Updated
+-------------------------------------------------
+Before making more changes, always update your local branch:
+
+$ git checkout main
+$ git pull origin main
+$ git checkout student-b-branch
+$ git merge main
+
+Then continue working.
+
+-------------------------------------------------
+💥 Merge Conflicts
+-------------------------------------------------
+If conflicts appear:
+- Git will show conflict markers (<<<<<<<, =======, >>>>>>>)
+- Manually fix the conflict
+- Then run:
+$ git add .
+$ git commit -m "Resolved merge conflict"
+$ git push origin your-branch
+
+-------------------------------------------------
+🔚 Final Notes:
+-------------------------------------------------
+- Always pull before pushing
+- Use meaningful commit messages
+- Use Pull Requests for every feature/change
+- Review others' code before merging

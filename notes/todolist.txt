@@ -1,0 +1,167 @@
+REACT TODO APP - CODE WITH PINPOINT EXPLANATIONS
+===============================================
+
+1. App.js (Main Component)
+--------------------------
+
+import { useState } from 'react';                   // → Import React state hook
+import TodoForm from './TodoForm';                 // → Import form component
+import TodoItem from './TodoItem';                 // → Import todo item component
+import './styles.css';                            // → Import CSS
+
+function App() {
+  const [todos, setTodos] = useState([]);          // → Main todos array state
+
+  // ADD NEW TODO
+  const addTodo = (text) => {                      
+    const newTodo = {                              // → Create new todo object
+      id: Date.now(),                              // → Unique ID using timestamp
+      text,                                        // → Todo text from input
+      isCompleted: false                           // → Default incomplete status
+    };
+    setTodos([...todos, newTodo]);                 // → Add to existing todos
+  };
+
+  // DELETE TODO
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id)); // → Filter out todo by ID
+  };
+
+  // TOGGLE COMPLETE STATUS
+  const toggleComplete = (id) => {
+    setTodos(todos.map(todo =>                     // → Map through todos
+      todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
+      // ↑ Toggle isCompleted for matching ID
+    ));
+  };
+
+  // UPDATE TODO TEXT
+  const updateTodo = (id, newText) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, text: newText } : todo
+      // ↑ Update text for matching ID
+    ));
+  };
+
+  return (
+    <div className="app">
+      <h1>Todo App</h1>
+      <TodoForm addTodo={addTodo} />               {/* → Render input form */}
+      <div className="todo-list">
+        {todos.map(todo => (                       // → Loop through todos
+          <TodoItem                                // → Render each todo
+            key={todo.id}                          // → Unique key for React
+            todo={todo}
+            deleteTodo={deleteTodo}
+            toggleComplete={toggleComplete}
+            updateTodo={updateTodo}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+2. TodoForm.js (Input Component)
+-------------------------------
+
+import { useState } from 'react';                  // → Import state hook
+
+function TodoForm({ addTodo }) {                   // → Receives addTodo function
+  const [value, setValue] = useState('');          // → Track input value
+
+  const handleSubmit = (e) => {
+    e.preventDefault();                            // → Prevent page reload
+    if (!value.trim()) return;                    // → Ignore empty inputs
+    addTodo(value);                               // → Call parent's add function
+    setValue('');                                 // → Clear input
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)} // → Update state on typing
+        placeholder="Add a new todo..."
+      />
+      <button type="submit">Add</button>          {/* → Submit button */}
+    </form>
+  );
+}
+
+3. TodoItem.js (Single Todo Component)
+--------------------------------------
+
+import { useState } from 'react';
+
+function TodoItem({ todo, deleteTodo, toggleComplete, updateTodo }) {
+  // Local state for edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
+
+  const handleEdit = () => setIsEditing(true);    // → Enable edit mode
+
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    updateTodo(todo.id, editText);                // → Call parent's update
+    setIsEditing(false);                          // → Exit edit mode
+  };
+
+  return (
+    <div className={`todo-item ${todo.isCompleted ? 'completed' : ''}`}>
+      {isEditing ? (                             // → Conditional render
+        // EDIT MODE
+        <form onSubmit={handleUpdate}>
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+          <button type="submit">Save</button>
+        </form>
+      ) : (
+        // VIEW MODE
+        <>
+          <span className="todo-text">{todo.text}</span>
+          <div className="actions">
+            <button 
+              onClick={() => toggleComplete(todo.id)}
+              className={todo.isCompleted ? 'completed-btn' : ''}
+            >
+              {todo.isCompleted ? 'Undo' : 'Complete'}
+            </button>
+            <button onClick={handleEdit}>Edit</button>
+            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+4. styles.css (Key Styles)
+--------------------------
+
+/* Completed todos get line-through */
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Complete button turns green when active */
+.completed-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Visual feedback for todos */
+.todo-item {
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+HOW TO RUN THIS APP:
+1. Create new React project: npx create-react-app todo-app
+2. Replace src/ files with these
+3. Run: npm start

@@ -1,0 +1,228 @@
+
+Firebase Authentication in React
+
+1. Create React App
+-------------------
+Run the following command in terminal:
+> npx create-react-app firebase-auth-app
+> cd firebase-auth-app
+
+Explanation:
+- This creates a new React project named 'firebase-auth-app'.
+- 'cd' changes directory into the project.
+
+2. Create Firebase Project
+--------------------------
+- Go to https://console.firebase.google.com
+- Click "Add project" > Name it > Continue
+- Disable Google Analytics if not needed
+- After creation, go to "Authentication" > "Get started"
+- Enable "Email/Password" sign-in method
+
+3. Install Firebase SDK
+-----------------------
+> npm install firebase
+
+Explanation:
+- This installs Firebase tools needed to connect React with Firebase backend.
+
+4. Firebase Configuration
+-------------------------
+Create a file: src/firebase/firebaseConfig.js
+
+Contents:
+---------
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",                  // Firebase project API key
+  authDomain: "YOUR_PROJECT.firebaseapp.com", // Your auth domain
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+
+const app = initializeApp(firebaseConfig); // Initialize the Firebase app
+export const auth = getAuth(app);          // Export authentication instance
+
+5. Auth Context (Recommended)
+-----------------------------
+File: src/context/AuthContext.js
+
+Contents:
+---------
+import { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
+
+const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);  // Update user state whenever auth changes
+    });
+    return () => unsub();    // Cleanup on unmount
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => useContext(AuthContext);
+
+Wrap App with AuthProvider in index.js:
+---------------------------------------
+import { AuthProvider } from "./context/AuthContext";
+
+<AuthProvider>
+  <App />
+</AuthProvider>
+
+6. Sign Up Page
+---------------
+File: src/pages/SignUp.jsx
+
+Contents:
+---------
+import { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
+
+const SignUp = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignup = async () => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("Signed up successfully");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return (
+    <>
+      <h2>Sign Up</h2>
+      <input onChange={e => setEmail(e.target.value)} placeholder="Email" />
+      <input type="password" onChange={e => setPassword(e.target.value)} placeholder="Password" />
+      <button onClick={handleSignup}>Sign Up</button>
+    </>
+  );
+};
+
+export default SignUp;
+
+7. Sign In Page
+---------------
+File: src/pages/SignIn.jsx
+
+Contents:
+---------
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
+
+const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("Signed in successfully");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  return (
+    <>
+      <h2>Sign In</h2>
+      <input onChange={e => setEmail(e.target.value)} placeholder="Email" />
+      <input type="password" onChange={e => setPassword(e.target.value)} placeholder="Password" />
+      <button onClick={handleSignin}>Sign In</button>
+    </>
+  );
+};
+
+export default SignIn;
+
+8. Home Page (Protected)
+------------------------
+File: src/pages/Home.jsx
+
+Contents:
+---------
+import { useAuth } from "../context/AuthContext";
+
+const Home = () => {
+  const { user } = useAuth();
+
+  return (
+    <div>
+      <h1>Welcome {user?.email}</h1>
+    </div>
+  );
+};
+
+export default Home;
+
+9. Routing
+----------
+Install:
+> npm install react-router-dom
+
+File: src/App.jsx
+
+Contents:
+---------
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
+import Home from "./pages/Home";
+import { useAuth } from "./context/AuthContext";
+
+function App() {
+  const { user } = useAuth();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={user ? <Home /> : <Navigate to="/signin" />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+10. Sign Out
+------------
+Use this where needed (like in Home):
+
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
+
+const handleSignOut = async () => {
+  await signOut(auth);
+};
+
+---
+
+✅ DONE: You now have a working Firebase Auth setup in React with:
+- SignUp
+- SignIn
+- SignOut
+- Protected routes
+- Context tracking of user state
